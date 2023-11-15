@@ -1,20 +1,57 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import Login from '../views/auth/Login.vue'
+import Signup from '../views/auth/Signup.vue'
+import CreateGallery from '../views/gallery/CreateGallery.vue'
+import ImageDetail from '../views/gallery/ImageDetail.vue'
+
+// Route Guard
+import { projectAuth } from '../firebase/config'
+
+const requireAuth = (to, from, next) => {
+  let user = projectAuth.currentUser
+  if(!user)
+  {
+    next({ name: 'Login' })
+  }
+  else{
+    next()
+  }
+}
 
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: HomeView
+    name: 'Home',
+    component: HomeView,
+    beforeEnter: requireAuth
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  }
+    path: '/login',
+    name: 'Login',
+    component: Login
+  },
+  {
+    path: '/signup',
+    name: 'Signup',
+    component: Signup
+  },
+
+  {
+    path: '/gallery/create',
+    name: 'CreateGallery',
+    component: CreateGallery,
+    beforeEnter: requireAuth
+  },
+
+  {
+    path: '/gallery/:id',
+    name: 'ImageDetail',
+    component: ImageDetail,
+    beforeEnter: requireAuth,
+    props: true
+  },
+
 ]
 
 const router = createRouter({
